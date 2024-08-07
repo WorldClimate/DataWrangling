@@ -1,48 +1,73 @@
 import projection_api as api
 import pandas as pd
+import shutil
+import sys
+import logic.historical_tempmax as hist_tempmax
+import logic.historical_tempmin as hist_tempmin
 
-# Get Input from User
-city_name = input("What is the City?")
-data_value = 'tempmax'
+def orchestrate(location, query_type, rolling_average):
 
-# Retrieve the projected data
-raw_projection_df = api.retrieveData(city_name, "2024-08-01", "2050-06-01")
-# Process projected data
-projected_max_temp_df = raw_projection_df[['datetime','data']]
-projected_max_temp_df['datetime'] = pd.to_datetime(projected_max_temp_df['datetime'])
-projected_max_temp_df = projected_max_temp_df.groupby([pd.Grouper(key='datetime', freq='1M')]).max()
+    # Get Input from Command Line
+    # city_name = sys.argv[1]
+    # data_value = sys.argv[2]
+    # rolling_average = int(sys.argv[3])
 
-# Rename column to align with historical data
-projected_max_temp_df.rename(columns={'data': data_value}, inplace=True)
+    # Get Input from User
+    # city_name = input("What is the City?")
+    # data_value = input("What is the Data value you would like? (tempmax, tempmin, precip)")
+    # rolling_average = int(input("What is the rolling average you would like?"))
+    # data_value = 'tempmax'
+    year = 2024
 
-# Save the processed data
-projected_max_temp_df.to_csv('../'+city_name+'/Processed/projected_'+data_value+'_monthly.csv')
-projected_max_temp_df.to_json('../'+city_name+'/Processed/projected_'+data_value+'_monthly.json', orient='table')
+    # Retrieve the projected data
+    raw_projection_df = api.retrieveData(location, query_type, f"{year}-08-01", "2050-06-01")
 
-# Retrieve the historical data
-input_file = '../'+city_name+'/Raw/historical_daily_raw.csv'
-raw_historical_df = pd.read_csv(input_file)
+    # Process projected data
+    projected_df = raw_projection_df[['datetime','data']]
+    projected_df['datetime'] = pd.to_datetime(projected_df['datetime'])
+    projected_df = projected_df.groupby([pd.Grouper(key='datetime', freq='1YE')],as_index=False).max()
+    projected_df['datetime'] = pd.to_datetime(projected_df['datetime'])
+    projected_df['year'] = projected_df['datetime'].dt.year
 
-# Process historical data
-historical_max_temp_df = raw_historical_df[['datetime',data_value]]
-historical_max_temp_df['datetime'] = pd.to_datetime(historical_max_temp_df['datetime'])
-historical_max_temp_df = historical_max_temp_df.groupby([pd.Grouper(key='datetime', freq='1M')]).max()
-historical_max_temp_df[data_value] = historical_max_temp_df[data_value].map(lambda a: (a-32) * 5/9)
+    # Rename column to align with historical data
+    projected_df.rename(columns={'data': query_type}, inplace=True)
 
-# Save the processed data
-output_location = '../'+city_name+'/Processed/historical_'+data_value+'_monthly'
-historical_max_temp_df.to_csv(output_location+'.csv')
-historical_max_temp_df.to_json(output_location+'.json', orient='table')
+    # Calculate Yearly Rolling Average
+    projected_df['yearly_rolling_avg'] = projected_df[query_type].rolling(rolling_average).mean().round(2)
 
-# Combine the historical & projected data
-combined_df = pd.concat([historical_max_temp_df, projected_max_temp_df])
+    # Drop first X rows that lack a rolling avg
+    projected_df = projected_df.iloc[rolling_average:]
 
-# calculate historical average over last two years
-output_location = '../'+city_name+'/Processed/combined_'+data_value
-combined_df.to_csv(output_location+'.csv')
-combined_df.to_json(output_location+'.json', orient='table')
-# determine if projected temp needs offset
+    # Save the processed data
+    projected_df.to_csv('../'+location['city_name']+'/Processed/projected_'+query_type+'_monthly.csv')
+    projected_df.to_json('../'+location['city_name']+'/Processed/projected_'+query_type+'_monthly.json', orient='table')
 
-# apply offset to projected data
+    # Retrieve the historical data
+    input_file = '../'+location['city_name']+'/Raw/historical_daily_raw.csv'
+    raw_historical_df = pd.read_csv(input_file)
 
-# Combine the historical & projected data
+    # Call Historical data API
+    if(query_type == 'tempmax'):
+        historical_df = hist_tempmax.calculate(raw_historical_df, query_type, rolling_average)
+
+    elif(query_type == 'tempmin'):
+        historical_df = hist_tempmin.calculate(raw_historical_df, query_type, rolling_average)
+
+    # Save the processed data
+    output_location = '../'+location['city_name']+'/Processed/historical_'+query_type+'_monthly'
+    historical_df.to_csv(output_location+'.csv')
+    historical_df.to_json(output_location+'.json', orient='table')
+
+    # Combine the historical & projected data
+    combined_df = pd.concat([historical_df, projected_df])
+    output_location = '../'+location['city_name']+'/Processed/combined_'+query_type
+    combined_df.to_csv(output_location+'.csv')
+    combined_df.to_json(output_location+'.json', orient='table')
+
+    # Copy the processed data to the web app
+    hyphenated_city = location['city_name'].replace(' ', '-')
+    source_file = open(output_location+'.json', 'rb')
+    destination_file = open('../../../Climate Platform/React/ClimatePlatform/data/'+hyphenated_city+'/combined_'+query_type+'.json', 'wb')
+    shutil.copyfileobj(source_file, destination_file)
+    print('Data copied to web app')
+    return True
