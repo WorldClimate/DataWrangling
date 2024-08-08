@@ -24,7 +24,7 @@ data = {
     #     "city_name": "New York",
     #     "country": "United States",
     # }],
-   "query_types":["tempmax","tempmin", "num_days_above_80", "num_days_above_90", "num_days_above_100"]
+   "query_types":["num_days_above_80", "num_days_above_90", "num_days_above_100"]
 }
 
 for location in data["locations"]:

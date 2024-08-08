@@ -6,7 +6,8 @@ def calculate(data_frame, query_type, temperature):
     historical_df['datetime'] = pd.to_datetime(historical_df['datetime'])
 
     historical_df = historical_df[historical_df['tempmax'] >= temperature]
-    count_series = historical_df['tempmax'].groupby([historical_df['datetime'].dt.year]).count()
+    # Count the number of days above the temperature threshold, fill in empty years with 0
+    count_series = historical_df['tempmax'].groupby([historical_df['datetime'].dt.year]).count().reindex(range(1980, 2025), fill_value=0)
     final_df = count_series.to_frame().reset_index()
     final_df.columns = ['year', query_type]
 
