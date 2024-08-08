@@ -1,0 +1,1 @@
+{"schema":{"fields":[{"name":"index","type":"integer"},{"name":"year","type":"integer"},{"name":"num_days_above_100","type":"integer"}],"primaryKey":["index"],"pandas_version":"1.4.0"},"data":[{"index":0,"year":2000,"num_days_above_100":1},{"index":1,"year":2017,"num_days_above_100":1},{"index":2,"year":2020,"num_days_above_100":1}]}
