@@ -13,7 +13,7 @@ def calculate(data_frame, data_value, rolling_average):
     historical_df['year'] = historical_df['datetime'].dt.year
     historical_df[data_value] = historical_df[data_value].map(lambda a: (a-32) * 5/9)
     # Calculate Yearly Rolling Average
-    historical_df['yearly_rolling_avg'] = historical_df[data_value].rolling(rolling_average).mean().round(2)
+    historical_df[f'{rolling_average}_year_rolling_avg'] = historical_df[data_value].rolling(rolling_average).mean().round(2)
 
     # Drop first X rows that lack a rolling avg
     historical_df = historical_df.iloc[rolling_average:]

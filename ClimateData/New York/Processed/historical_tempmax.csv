@@ -1,4 +1,4 @@
-,datetime,tempmax,year,yearly_rolling_avg
+,datetime,tempmax,year,10_year_rolling_avg
 10,1990-12-31,34.611111111111114,1990,35.36
 11,1991-12-31,37.5,1991,35.53
 12,1992-12-31,34.44444444444444,1992,35.4

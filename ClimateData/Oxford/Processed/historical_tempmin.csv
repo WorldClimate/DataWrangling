@@ -1,4 +1,4 @@
-,datetime,tempmin,year,yearly_rolling_avg
+,datetime,tempmin,year,10_year_rolling_avg
 10,1990-12-31,-4.111111111111111,1990,-8.98
 11,1991-12-31,-8.5,1991,-8.09
 12,1992-12-31,-6.888888888888888,1992,-6.96
