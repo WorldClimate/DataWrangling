@@ -9,6 +9,7 @@ import logic.projected_tempmin as projected_tempmin
 import logic.projected_days_above_x as projected_days_above_x
 import logic.projected_precip as projected_precip
 import logic.historical_precip as historical_precip
+import logic.combined_rolling_average as combined_rolling_average
 
 def orchestrate(location, query_type, rolling_average):
 
@@ -42,7 +43,7 @@ def orchestrate(location, query_type, rolling_average):
     # # Save the processed data
     process_historical(location, query_type, historical_df)
     process_projected(location, query_type, projected_df)
-    process_combined(combined_output_location, historical_df, projected_df)
+    process_combined(combined_output_location, historical_df, projected_df, rolling_average, query_type)
     copy_data_to_webapp(location, combined_output_location, query_type)
     return True
 
@@ -58,8 +59,10 @@ def process_projected(location, query_type, projected_df):
     projected_df.to_json(projected_output_location+'.json', orient='table')
     return True
 
-def process_combined(combined_output_location, historical_df, projected_df):
+def process_combined(combined_output_location, historical_df, projected_df, rolling_average, query_type):
     combined_df = pd.concat([historical_df, projected_df])
+    # Add rolling average in that uses combined data
+    combined_df = combined_rolling_average.calculate(combined_df, rolling_average, query_type)
     combined_df.to_csv(combined_output_location+'.csv')
     combined_df.to_json(combined_output_location+'.json', orient='table')
     return True
