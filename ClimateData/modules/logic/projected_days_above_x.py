@@ -2,7 +2,7 @@ import pandas as pd
 import projection_api as api
 
 def calculate(location, query_type, year):
-    raw_projection_df = api.retrieveData(location, query_type, f"{year}-08-01", "2080-06-01")
+    raw_projection_df = api.retrieveData(location, query_type, f"{year}-01-02", "2080-12-31")
 
     # Process projected data
     raw_projection_df['datetime'] = pd.to_datetime(raw_projection_df['datetime'])
