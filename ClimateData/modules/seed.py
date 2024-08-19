@@ -18,6 +18,10 @@ data = {
     {
         "city_name": "San Francisco",
         "country": "United States",
+    },
+    {
+        "city_name": "Lagos",
+        "country": "Nigeria",
     }],
    "query_types":["num_days_above_80", "num_days_above_90", "num_days_above_100", "precip", "tempmax", "tempmin"]
     # "locations":[
