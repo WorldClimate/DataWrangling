@@ -1,5 +1,4 @@
 import pandas as pd
-import shutil
 import sys
 import logic.historical_tempmax as hist_tempmax
 import logic.historical_tempmin as hist_tempmin
@@ -10,7 +9,7 @@ import logic.projected_days_above_x as projected_days_above_x
 import logic.projected_precip as projected_precip
 import logic.historical_precip as historical_precip
 import logic.combined_rolling_average as combined_rolling_average
-
+import helpers.webapp_data_copier as webapp_data_copier
 def orchestrate(location, query_type, rolling_average):
 
     year = 2024
@@ -44,7 +43,7 @@ def orchestrate(location, query_type, rolling_average):
     process_historical(location, query_type, historical_df)
     process_projected(location, query_type, projected_df)
     process_combined(combined_output_location, historical_df, projected_df, rolling_average, query_type)
-    copy_data_to_webapp(location, combined_output_location, query_type)
+    webapp_data_copier.copy(location, combined_output_location, query_type)
     return True
 
 def process_historical(location, query_type, historical_df):
@@ -67,11 +66,3 @@ def process_combined(combined_output_location, historical_df, projected_df, roll
     combined_df.to_json(combined_output_location+'.json', orient='table')
     return True
 
-def copy_data_to_webapp(location, combined_output_location, query_type):
-        # Copy the processed data to the web app
-    hyphenated_city = location['city_name'].replace(' ', '-')
-    source_file = open(combined_output_location+'.json', 'rb')
-    destination_file = open('../../../Climate Platform/React/ClimatePlatform/data/'+hyphenated_city+'/combined_'+query_type+'.json', 'wb')
-    shutil.copyfileobj(source_file, destination_file)
-    print('Data copied to web app')
-    return True
