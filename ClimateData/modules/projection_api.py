@@ -27,3 +27,11 @@ def retrieveData(location, query_type, start_date, end_date):
     df = pd.read_csv(url, skiprows=12)
     return df
 
+def retrieveDataByBoundingBox(from_latitude, to_latitude, from_longitude, to_longitude, query_type, start_date, end_date):
+    url_dictionary = {
+    "tempmax": f'https://beta.climatedataservice.com/v6/volume/json?query=annually(maxtmp,max)&from_date={start_date}T00:00:00.000Z&to_date={end_date}T00:00:00.000Z&from_latitude={from_latitude}&to_latitude={to_latitude}&from_longitude={from_longitude}&to_longitude={to_longitude}&apikey={api_key}'
+    }
+    url = f'https://beta.climatedataservice.com/v6/series/csv{url_dictionary[query_type]}'
+    print(url)
+    df = pd.read_csv(url, skiprows=12)
+    return df
