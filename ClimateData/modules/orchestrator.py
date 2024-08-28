@@ -2,12 +2,14 @@ import pandas as pd
 import sys
 import logic.historical_tempmax as hist_tempmax
 import logic.historical_tempmin as hist_tempmin
+import logic.historical_precip as historical_precip
+import logic.historical_dewpoint as hist_dewpoint
 import logic.historical_days_above_x as hist_days_above_x
 import logic.projected_tempmax as projected_tempmax
 import logic.projected_tempmin as projected_tempmin
 import logic.projected_days_above_x as projected_days_above_x
 import logic.projected_precip as projected_precip
-import logic.historical_precip as historical_precip
+import logic.projected_dewpoint as projected_dewpoint
 import logic.combined_rolling_average as combined_rolling_average
 import helpers.webapp_data_copier as webapp_data_copier
 def orchestrate(location, query_type, rolling_average):
@@ -38,6 +40,9 @@ def orchestrate(location, query_type, rolling_average):
     elif(query_type == 'precip'):
         historical_df = historical_precip.calculate(raw_historical_df, rolling_average)
         projected_df = projected_precip.calculate(location, query_type, rolling_average_year, rolling_average)
+    elif(query_type == 'dew'):
+        historical_df = hist_dewpoint.calculate(raw_historical_df, year)
+        projected_df = projected_dewpoint.calculate(location, query_type, year)
 
     # # Save the processed data
     process_historical(location, query_type, historical_df)

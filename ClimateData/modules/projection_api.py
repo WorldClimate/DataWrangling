@@ -21,15 +21,7 @@ def retrieveData(location, query_type, start_date, end_date):
     "tempmax": f"?query=monthly(maxtmp,max)&from_date={start_date}T00%3A00%3A00.000Z&to_date={end_date}T00%3A00%3A00.000Z&latitude={latlong[0]}&longitude={latlong[1]}&apikey={api_key}",
     "tempmin": f"?query=annually(mintmp,min)&from_date={start_date}T00%3A00%3A00.000Z&to_date={end_date}T00%3A00%3A00.000Z&latitude={latlong[0]}&longitude={latlong[1]}&apikey={api_key}",
     "precip": f"?query=annually(pr,sum)&from_date={start_date}T00%3A00%3A00.000Z&to_date={end_date}T00%3A00%3A00.000Z&latitude={latlong[0]}&longitude={latlong[1]}&apikey={api_key}",
-    }
-    url = f'https://beta.climatedataservice.com/v6/series/csv{url_dictionary[query_type]}'
-    print(url)
-    df = pd.read_csv(url, skiprows=12)
-    return df
-
-def retrieveDataByBoundingBox(from_latitude, to_latitude, from_longitude, to_longitude, query_type, start_date, end_date):
-    url_dictionary = {
-    "tempmax": f'https://beta.climatedataservice.com/v6/volume/json?query=annually(maxtmp,max)&from_date={start_date}T00:00:00.000Z&to_date={end_date}T00:00:00.000Z&from_latitude={from_latitude}&to_latitude={to_latitude}&from_longitude={from_longitude}&to_longitude={to_longitude}&apikey={api_key}'
+    "dew":f"?query=annually(dew,mean)&from_date={start_date}T00%3A00%3A00.000Z&to_date={end_date}T00%3A00%3A00.000Z&latitude={latlong[0]}&longitude={latlong[1]}&apikey={api_key}"
     }
     url = f'https://beta.climatedataservice.com/v6/series/csv{url_dictionary[query_type]}'
     print(url)

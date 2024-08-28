@@ -23,13 +23,13 @@ data = {
         "city_name": "Lagos",
         "country": "Nigeria",
     }],
-   "query_types":["num_days_above_80", "num_days_above_90", "num_days_above_100", "precip", "tempmax", "tempmin"]
+#    "query_types":["num_days_above_80", "num_days_above_90", "num_days_above_100", "precip", "tempmax", "tempmin"]
     # "locations":[
     # {
     #     "city_name": "New York",
     #     "country": "United States",
     # }],
-    #"query_types":["precip"]
+    "query_types":["dew"]
 }
 
 for location in data["locations"]:
