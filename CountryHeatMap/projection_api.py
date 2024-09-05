@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 import os
 import pandas as pd
 import io
-
+import time
 load_dotenv()
 api_key = os.getenv("CLIMATE_API_KEY")
 
