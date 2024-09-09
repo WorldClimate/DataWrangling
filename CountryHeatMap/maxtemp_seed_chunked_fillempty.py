@@ -5,9 +5,7 @@ import time
 from ast import literal_eval
 import json
 
-countries = pd.read_csv('maxtemp_countries_v2.csv')
-already_processed = json.load(open('maxtemp_already_processed.json'))
-print(already_processed)
+countries = pd.read_csv('mean_maxtemp_countries.csv')
 count=0
 lowest=500
 highest=-500
